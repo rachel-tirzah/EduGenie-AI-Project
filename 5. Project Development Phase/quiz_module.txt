@@ -1,0 +1,31 @@
+import os
+from google import genai
+
+
+def generate_quiz(topic: str) -> str:
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key:
+        return "Gemini API key is not configured yet."
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        prompt = f"""
+Create a short educational quiz about: {topic}
+
+Create exactly 3 multiple-choice questions.
+Each question must have 4 options: A, B, C, and D.
+Clearly provide the correct answer after each question.
+Keep the questions suitable for a student.
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt
+        )
+
+        return response.text
+
+    except Exception as e:
+        return f"Error: {str(e)}"
